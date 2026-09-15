@@ -10,6 +10,9 @@ interface ContainerDao {
     @Query("SELECT * FROM container")
     fun getAll(): Flow<List<Container>>
 
+    @Query("SELECT COUNT(*) FROM container")
+    suspend fun getTotalContainerNumber(): Int
+
     @Insert
     suspend fun insert(container: Container)
 

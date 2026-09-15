@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import com.unicofrance.uniexo.data.local.database.AppDatabase
+import com.unicofrance.uniexo.data.local.database.CSVData
 import com.unicofrance.uniexo.data.remote.Api
 import com.unicofrance.uniexo.data.repositories.ContainerRepository
 import okhttp3.OkHttpClient
@@ -37,6 +38,10 @@ class UniExoApplication : Application() {
     }
 
     val containerRepository by lazy {
-        ContainerRepository(containerDao = database.containerDao())
+        ContainerRepository(
+            containerDao = database.containerDao(),
+            csvData = CSVData(),
+            context = applicationContext
+        )
     }
 }
