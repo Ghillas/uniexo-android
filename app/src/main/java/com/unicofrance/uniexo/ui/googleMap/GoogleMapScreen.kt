@@ -11,13 +11,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -71,7 +71,10 @@ fun GoogleMapScreen(
                     val latLng = LatLng(it.latitude, it.longitude)
                     userLocation = latLng
                     cameraPositionState.move(
-                        CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                        CameraUpdateFactory.newLatLngZoom(USER_POSITION_MOCK, 15f) // I use a mock for the position to simplify test
+                    )
+                    viewModel.getVisibleContainer(
+                        cameraPositionState.projection?.visibleRegion?.latLngBounds
                     )
                 }
             }
@@ -80,25 +83,39 @@ fun GoogleMapScreen(
 
     val locations by viewModel.locations.collectAsStateWithLifecycle()
 
+    val visibleLocations by viewModel.visiblePoint.collectAsStateWithLifecycle()
+
     val containerSelected = remember {
         mutableIntStateOf(0)
     }
 
-    LaunchedEffect(locations) {
-        locations.firstOrNull()?.let {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                it,
-                10f
+    LaunchedEffect(cameraPositionState) {
+        snapshotFlow {
+            Pair(
+                cameraPositionState.isMoving,
+                cameraPositionState?.projection?.visibleRegion?.latLngBounds
             )
+        }.collect { (isMoving, bound) ->
+            if(!isMoving && bound != null) {
+                viewModel.getVisibleContainer(
+                    cameraPositionState.projection?.visibleRegion?.latLngBounds
+                )
+            }
         }
     }
     val container = remember {
         mutableStateOf<Container?>(null)
     }
 
-    val mapProperties = remember {
+    val mapProperties = remember(hasLocationPermission) {
         MapProperties(
             isMyLocationEnabled = hasLocationPermission
+        )
+    }
+
+    val mapUiSettings = remember(hasLocationPermission) {
+        MapUiSettings(
+            myLocationButtonEnabled = hasLocationPermission
         )
     }
 
@@ -107,12 +124,10 @@ fun GoogleMapScreen(
             GoogleMap(
                 cameraPositionState = cameraPositionState,
                 properties = mapProperties,
-                uiSettings = MapUiSettings(
-                    myLocationButtonEnabled = hasLocationPermission
-                ),
+                uiSettings = mapUiSettings,
                 modifier = modifier
             ) {
-                locations.forEach { containerLoc ->
+                visibleLocations.forEach { containerLoc ->
                     Marker(
                         state = rememberUpdatedMarkerState(
                             containerLoc
@@ -137,5 +152,7 @@ fun GoogleMapScreen(
     }
 }
 
-
-
+val USER_POSITION_MOCK = LatLng(
+    43.335833,
+    3.225556
+)
