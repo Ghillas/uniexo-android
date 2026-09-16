@@ -6,6 +6,11 @@ import java.sql.Timestamp
 
 class CSVData {
 
+
+    /*
+    *  parse container data from csv file
+    *
+    * */
     fun parseCsvFromAssets(context: Context): List<Container> {
         val csvRegex = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex()
         return context.assets.open(FILENAME).bufferedReader().useLines { lines ->

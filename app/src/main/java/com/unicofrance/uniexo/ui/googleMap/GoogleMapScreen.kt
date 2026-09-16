@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -28,6 +29,11 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.unicofrance.uniexo.data.local.database.entities.Container
 import com.unicofrance.uniexo.ui.container.ContainerScreen
 
+/*
+*  Map screen that load only the visible container on the map
+*  Require and display user position on the map
+*
+* */
 @Composable
 fun GoogleMapScreen(
     modifier: Modifier = Modifier,
@@ -139,6 +145,13 @@ fun GoogleMapScreen(
                         },
                     )
                 }
+                Marker (
+                    state = rememberUpdatedMarkerState(
+                        USER_POSITION_MOCK
+                    ),
+                    title = "User position Mock",
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                )
             }
         }
         1 -> {
@@ -156,3 +169,4 @@ val USER_POSITION_MOCK = LatLng(
     43.335833,
     3.225556
 )
+// I use mock for the start position on the map because i try the app on my personal phone

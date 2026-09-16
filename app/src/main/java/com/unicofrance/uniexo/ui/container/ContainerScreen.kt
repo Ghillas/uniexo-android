@@ -29,6 +29,10 @@ import com.unicofrance.uniexo.ui.components.DefaultSpacer
 import com.unicofrance.uniexo.ui.lib.SvgIcon
 import com.unicofrance.uniexo.utils.getDateTime
 
+/*
+*  Screen for container information
+*
+* */
 @Composable
 fun ContainerScreen(
     container : Container,

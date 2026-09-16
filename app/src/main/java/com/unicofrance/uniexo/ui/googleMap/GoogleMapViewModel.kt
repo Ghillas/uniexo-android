@@ -32,6 +32,11 @@ class GoogleMapViewModel(
         getContainers()
     }
 
+    /*
+    *
+    * get the position of all the containers
+    *
+    * */
     fun getContainers() {
         viewModelScope.launch {
             containerRepository
@@ -50,6 +55,10 @@ class GoogleMapViewModel(
         }
     }
 
+    /*
+    *  get a container with a specific position
+    *
+    * */
     fun getContainer(latLng: LatLng) : Container? {
         return _containers.firstOrNull { container ->
             LatLng(
@@ -59,6 +68,12 @@ class GoogleMapViewModel(
         }
     }
 
+
+    /*
+    *
+    *  filter the container position to get only the container in the visibleArea
+    *
+    * */
     fun getVisibleContainer(visibleArea : LatLngBounds?) {
         _visibleArea.value = visibleArea
         viewModelScope.launch {

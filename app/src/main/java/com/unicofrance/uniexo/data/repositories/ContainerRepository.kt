@@ -12,6 +12,10 @@ class ContainerRepository(
     private val context: Context
 ) {
 
+    /*
+    * check if the DB is empty, and then fill the DB with the CSV Data
+    *
+    * */
     suspend fun getAll() : Flow<List<Container>>{
         if (
             getTotalContainerNumber() == 0
